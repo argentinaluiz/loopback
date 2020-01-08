@@ -1,0 +1,118 @@
+import {Component, service} from '@loopback/core';
+import {connect, Connection} from 'amqplib';
+import assert from 'assert';
+import {RootSyncService} from "../services";
+
+const EXCHANGE_NAME= 'amq.topic';
+const DLX_EXCHANGE_NAME= `dlx.${EXCHANGE_NAME}`;
+const QUEUE_NAME= `catalog-search-api.videos`;
+const DLX_QUEUE_NAME= `dlx.${QUEUE_NAME}`;
+
+export default class RabbitmqComponent implements Component {
+    maxAttempts;
+    messageTtl;
+    constructor(
+        @service(RootSyncService) public myService: RootSyncService
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this.maxAttempts = parseInt(process.env.RABBITMQ_MAX_ATTEMPTS as any);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this.messageTtl = parseInt(process.env.RABBITMQ_MESSAGE_TTL as any);
+        this.boot().catch(err => console.error('Boot RabbitMQ failed.', err));
+    }
+
+    async boot() {
+        const open = await this.connect();
+        const channel = await open.createChannel();
+        const exchange = await channel.assertExchange(EXCHANGE_NAME, `topic`);
+        const exchangeDlx = await channel.assertExchange(DLX_EXCHANGE_NAME, `topic`);
+        const queueDlx = await channel.assertQueue(
+            DLX_QUEUE_NAME,
+            {
+                arguments: {
+                    'x-message-ttl': this.messageTtl,
+                    'x-dead-letter-exchange': exchange.exchange,
+                }
+            }
+        );
+        const queue = await channel.assertQueue(QUEUE_NAME, {
+            arguments: {
+                'x-dead-letter-exchange': exchangeDlx.exchange,
+            }
+        });
+
+
+        await channel.bindQueue(queue.queue, exchange.exchange, 'model.*.*');
+        await channel.bindQueue(queueDlx.queue, exchangeDlx.exchange, 'model.*.*');
+
+        await channel.consume(queue.queue, (message) => {
+            if (!message) {
+                return;
+            }
+            const data = this.getJsonResponse({channel, message, queue: queue.queue});
+            if (!data) {
+                return;
+            }
+            const [model, action] = message.fields.routingKey.split('.').slice(1);
+            const options = {model, action, data};
+            this.myService.sync(options)
+                .then(() => {
+                    channel.ack(message);
+                })
+                .catch((error) => {
+                    this.handleError({channel, message, queue, error});
+                })
+        });
+
+    }
+
+    connect(): Promise<Connection> {
+        return connect(
+            {
+                hostname: process.env.RABBITMQ_HOST,
+                username: process.env.RABBITMQ_USER,
+                password: process.env.RABBITMQ_PASSWORD,
+            }
+        )
+    }
+
+    getJsonResponse({channel, message, queue}): object | null {
+        try {
+            assert.strictEqual('application/json', message.properties.contentType);
+            return JSON.parse(message.content.toString());
+        } catch (error) {
+            this.handleError({channel, message, queue, error});
+            return null;
+        }
+    }
+
+    handleError({channel, queue, message, error}) {
+        const hasAck = this.handleMaxAttemptsExceeded({channel, queue: queue, message, error});
+        if (!hasAck) {
+            channel.reject(message, false);
+            console.error(error, {
+                routingKey: message.fields.routingKey,
+                content: message.content.toString()
+            });
+        }
+    }
+
+    handleMaxAttemptsExceeded({channel, queue, message, error}): boolean {
+        if (message.properties.headers && 'x-death' in message.properties.headers) {
+            const count = (message.properties.headers['x-death'] as {})[0]['count'];
+            if (count > this.maxAttempts) {
+                channel.ack(message);
+                console.error(
+                    `Ack in ${queue} with error. Max attempts exceeded: ${this.maxAttempts}.`,
+                    error,
+                    {
+                        routingKey: message.fields.routingKey,
+                        content: message.content.toString()
+                    }
+                );
+                return true;
+            }
+        }
+        return false;
+    }
+}
