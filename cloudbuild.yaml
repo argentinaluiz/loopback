@@ -20,11 +20,11 @@ steps:
         'app',
         'dockerize',
         '-wait',
-        'http://elatiscsearch:9200',
+        'http://elasticsearch:9200',
         '-wait',
         'http://app:3001',
         '-timeout',
-        '200s',
+        '60s',
       ]
 
   - id: 'Rodando tests'
