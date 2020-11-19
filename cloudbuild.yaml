@@ -4,21 +4,21 @@ steps:
     args: ['-f', 'docker-compose.prod.yaml', 'up', '-d']
 
   - id: 'Chown in /home/node/app'
-    name: 'gcr.io/cloud-builders/docker'
+    name: 'docker'
     args: ['exec', '-u', 'root', '-t', 'app', 'chown', '-R', 'node:node', '.']
 
   - id: 'Rodando npm install'
-    name: 'gcr.io/cloud-builders/docker'
+    name: 'docker'
     args: ['exec', '-t', 'app', 'npm', 'install']
 
   - id: 'Copiando .env'
-    name: 'gcr.io/cloud-builders/docker'
+    name: 'docker'
     args: ['exec', '-t', 'app', 'cp', '.env.example', '.env']
 
   - id: 'Rodando tests'
-    name: 'gcr.io/cloud-builders/docker'
+    name: 'docker'
     args: ['exec', '-t', 'app', 'npm', 'test']
 
   - id: 'Rodando build'
-    name: 'gcr.io/cloud-builders/docker'
+    name: 'docker'
     args: ['exec', '-t', 'app', 'npm', 'build']
