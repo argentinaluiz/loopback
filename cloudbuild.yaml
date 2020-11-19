@@ -7,14 +7,6 @@ steps:
     name: 'docker'
     args: ['exec', '-u', 'root', '-t', 'app', 'chown', '-R', 'node:node', '.']
 
-  - id: 'Rodando npm install'
-    name: 'docker'
-    args: ['exec', '-t', 'app', 'npm', 'install']
-
-  - id: 'Copiando .env'
-    name: 'docker'
-    args: ['exec', '-t', 'app', 'cp', '.env.example', '.env']
-
   - id: 'Rodando tests'
     name: 'docker'
     args: ['exec', '-t', 'app', 'npm', 'test']
