@@ -16,7 +16,6 @@ steps:
     args:
       [
         'exec',
-        '-u',
         '-t',
         'app',
         'dockerize',
