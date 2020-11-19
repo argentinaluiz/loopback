@@ -4,7 +4,7 @@ import {
   lifeCycleObserver,
   ValueOrPromise,
 } from '@loopback/core';
-import {Client} from 'es7';
+import {Client} from 'es6';
 import {juggler} from '@loopback/repository';
 
 @lifeCycleObserver('datasource')
