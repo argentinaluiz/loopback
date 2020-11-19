@@ -24,7 +24,7 @@ steps:
         '-wait',
         'http://app:3001',
         '-timeout',
-        '60s',
+        '120s',
       ]
 
   - id: 'Rodando tests'
