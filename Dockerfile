@@ -5,7 +5,7 @@ RUN apk add --no-cache bash
 
 RUN touch /root/.bashrc | echo "PS1='\w\$ '" >> /root/.bashrc
 
-RUN npm install -g @loopback/cli
+RUN npm install -g @loopback/cli@2.3.0
 RUN npm install -g nodemon
 
 WORKDIR /home/node/app

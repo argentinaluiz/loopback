@@ -1,6 +1,6 @@
 #!/bin/bash
 
-npm config set cache /var/www/.npm-cache --global
+#npm config set cache /home/node/app/.npm-cache --global
 
 cd /home/node/app
 

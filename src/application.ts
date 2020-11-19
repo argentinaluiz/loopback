@@ -1,35 +1,52 @@
 import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
-import {
-  RestExplorerBindings,
-  RestExplorerComponent,
-} from '@loopback/rest-explorer';
+import {Application, ApplicationConfig} from '@loopback/core';
+import {RestExplorerBindings} from '@loopback/rest-explorer';
 import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
+import {
+  //getJsonSchema,
+  //getModelSchemaRef,
+  RestBindings,
+  RestComponent,
+  RestServer,
+  //RestTags,
+} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
-import {RabbitmqBooter} from "./booters/rabbitmq.booter";
-import ModelObserverBooter from "./booters/model-observer.booter";
+//import {Ajv, ValidationError} from 'ajv';
+import ValidatorsComponent from './components/validators.component';
+import {
+  RestExplorerComponent,
+  ModelsComponent,
+  RabbitmqComponent,
+} from './components';
+//import {ValidatorService} from './services';
+//import {Category, Video} from './models';
+import {ApiResourceProvider} from './providers/api-resource.provider';
+//import {CrudRestComponent} from '@loopback/rest-crud';
+//import {BaseRepository} from './repositories/base.repository';
+//import {difference} from 'lodash';
+//import {getModelRelations} from '@loopback/repository';
 
 export class LoopbackTestApplication extends BootMixin(
-  ServiceMixin(RepositoryMixin(RestApplication)),
+  ServiceMixin(RepositoryMixin(Application)),
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
-    // Set up the custom sequence
-    this.sequence(MySequence);
+    options.rest.sequence = MySequence;
+    this.component(RestComponent);
+    const restServer = this.getSync<RestServer>('servers.RestServer');
+    restServer.static('/', path.join(__dirname, '../public'));
 
-    // Set up default home page
-    this.static('/', path.join(__dirname, '../public'));
-
-    // Customize @loopback/rest-explorer configuration here
+    //Customize @loopback/rest-explorer configuration here
     this.bind(RestExplorerBindings.CONFIG).to({
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
-
+    this.component(ModelsComponent);
+    this.component(RabbitmqComponent);
+    this.component(ValidatorsComponent);
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
@@ -39,12 +56,53 @@ export class LoopbackTestApplication extends BootMixin(
         extensions: ['.controller.js'],
         nested: true,
       },
-
     };
-    this.booters(ModelObserverBooter);
-    this.booters(RabbitmqBooter);
+
+    this.bind(RestBindings.SequenceActions.SEND).toProvider(
+      ApiResourceProvider,
+    );
+    // this.booters(RabbitmqBooter);
 
     //this.service(ModelsSyncService);
     //this.component(RabbitMQComponent);
+    //this.component(CrudRestComponent);
   }
+
+  /*async boot() {
+        await super.boot();
+        //@ts-ignore
+        console.log(getJsonSchema(Video));
+        //console.log(this.getSync('repositories.CategoryRepository').entityClass);
+
+        // //console.log(this.find('*.*'));
+        // // @ts-ignore
+        // const validator = this.getSync('services.ValidatorService');
+        // try {
+        //     // @ts-ignore
+        //     console.log(this.getSync('repositories.CategoryRepository').entityClass);
+        //     // @ts-ignore
+        //     await validator.validate({
+        //         // @ts-ignore
+        //         entityClass: this.getSync('repositories.CategoryRepository').entityClass,
+        //         data: {
+        //             name: ''
+        //         },
+        //     })
+        // }catch (e){
+        //     console.error(e);
+        // }
+        //  try {
+        //      //    // @ts-ignore
+        //      // await validator.validate({
+        //      //     entityClass: Category,
+        //      //     data: {
+        //      //         name: ''
+        //      //     },
+        //      //     options: {partial: true}
+        //      // })
+        //  }catch (e) {
+        //      console.error(e);
+        //  }
+
+    }*/
 }

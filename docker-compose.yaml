@@ -5,23 +5,24 @@ services:
   app:
     build: .
     entrypoint: ./.docker/entrypoint.sh
-    container_name: micro-catalog-app
+    container_name: micro-catalog-app1
     ports:
       - "3001:3001"
     environment:
       - HOST=0.0.0.0
       - PORT=3001
+      - CHOKIDAR_USEPOLLING=true
     volumes:
       - .:/home/node/app
     networks:
       - app-network
-      - rabbitmq_network
+      # - rabbitmq-test_network
     depends_on:
       - elasticsearch
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
-    container_name: elasticsearch
+    container_name: elasticsearch1
     environment:
       - discovery.type=single-node
     volumes:
@@ -41,5 +42,5 @@ services:
 networks:
   app-network:
     driver: bridge
-  rabbitmq_network:
-    external: true
+  # rabbitmq-test_network:
+  #   external: true

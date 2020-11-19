@@ -1,5 +1,10 @@
 import {Entity, model, property} from '@loopback/repository';
 
+export enum CastMemberType {
+  DIRECTOR = 1,
+  ACTOR = 2,
+}
+
 export interface SmallCastMember {
   id: string;
   name: string;
@@ -8,29 +13,31 @@ export interface SmallCastMember {
 
 @model()
 export class CastMember extends Entity {
-
   @property({
-    id: true, generated: false
+    id: true,
+    generated: false,
+    required: true,
   })
   id: string;
 
   @property({
     type: 'string',
     required: true,
+    jsonSchema: {
+      minLength: 1,
+      maxLength: 255,
+    },
   })
   name: string;
 
   @property({
     type: 'number',
     required: true,
+    jsonSchema: {
+      enum: [CastMemberType.DIRECTOR, CastMemberType.ACTOR],
+    },
   })
   type: number;
-
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  is_active: boolean = true;
 
   @property({
     type: 'date',

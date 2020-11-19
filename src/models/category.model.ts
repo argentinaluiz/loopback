@@ -8,23 +8,39 @@ export interface SmallCategory {
 
 @model()
 export class Category extends Entity {
-
   @property({
-    id: true, generated: false
+    id: true,
+    generated: false,
+    required: true,
   })
   id: string;
 
   @property({
     type: 'string',
     required: true,
+    jsonSchema: {
+      minLength: 1,
+      maxLength: 255,
+    },
   })
   name: string;
 
   @property({
+    type: 'string',
+    required: false,
+    // jsonSchema: {
+    //   nullable: true,
+    // },
+    default: '',
+  })
+  description: string;
+
+  @property({
     type: 'boolean',
     required: false,
+    default: true,
   })
-  is_active: boolean = true;
+  is_active: boolean;
 
   @property({
     type: 'date',

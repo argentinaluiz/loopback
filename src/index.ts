@@ -1,16 +1,17 @@
 import './bootstrap';
 import {LoopbackTestApplication} from './application';
 import {ApplicationConfig} from '@loopback/core';
+import {RestServer} from '@loopback/rest';
 
 export {LoopbackTestApplication};
 
 export async function main(options: ApplicationConfig = {}) {
-
   const app = new LoopbackTestApplication(options);
   await app.boot();
   await app.start();
 
-  const url = app.restServer.url;
+  const restServer = app.getSync<RestServer>('servers.RestServer');
+  const url = restServer.url;
   console.log(`Server is running at ${url}`);
   console.log(`Try ${url}/ping`);
 

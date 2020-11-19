@@ -1,0 +1,83 @@
+import {bind, /* inject, */ BindingScope, service} from '@loopback/core';
+import {ModelSyncInterface, SyncOptions} from "../model-sync.interface";
+import {repository} from "@loopback/repository";
+import {CastMemberRepository, GenreRepository, VideoRepository} from "../../../repositories";
+import {SmallCastMember, SmallGenre} from "../../../models";
+import {BaseModelSyncService} from "../base-model-sync.service";
+import {VideoCategorySync} from "./video-category-sync.service";
+
+@bind({scope: BindingScope.TRANSIENT})
+export class VideoSyncService extends BaseModelSyncService implements ModelSyncInterface {
+    constructor(
+        @repository(VideoRepository) public repo: VideoRepository,
+        @repository(GenreRepository) public genreRepo: GenreRepository,
+        @repository(CastMemberRepository) public castMemberRepo: CastMemberRepository,
+        @service(VideoCategorySync) public videoCategorySync: VideoCategorySync
+    ) {
+        super();
+    }
+
+    async sync(options: SyncOptions) {
+        if (options.model === 'video') {
+            await this.defaultSync(this.repo, options);
+        } else {
+            await this.syncRelations(options)
+        }
+    }
+
+    private async syncRelations(options: SyncOptions) {
+        switch (options.model) {
+            case 'video_categories':
+                await this.videoCategorySync.sync(options);
+                break;
+            case 'video_genres':
+                await this.syncGenres(options);
+                break;
+            case 'video_cast_members':
+                await this.syncCastMembers(options);
+                break;
+        }
+
+    }
+
+
+    // private async syncCategories(options: SyncOptions) {
+    //     const categoryKeys: SmallCategory = {id: '', name: '', is_active: true};
+    //     const categories = await this.categoryRepo.searchIn(
+    //         options.data.relation_ids.map(id => ({id})),
+    //         {
+    //             fields: Object.keys(categoryKeys),
+    //         }
+    //     );
+    //     await this.repo.updateById(options.data.id, {categories})
+    // }
+
+    private async syncGenres(options: SyncOptions) {
+        const genreKeys: SmallGenre = {id: '', name: '', is_active: true};
+        const genres = await this.genreRepo.find(
+            {
+                where: {
+                    or: options.data.relation_ids.map(id => ({id})),
+                },
+                // @ts-ignore
+                fields: Object.keys(genreKeys),
+            }
+        );
+        await this.repo.updateById(options.data.id, {genres})
+    }
+
+    private async syncCastMembers(options: SyncOptions) {
+        const castMemberKeys: SmallCastMember = {id: '', name: '', type: 0};
+        const cast_members = await this.castMemberRepo.find(
+            {
+                where: {
+                    or: options.data.relation_ids.map(id => ({id})),
+                },
+                // @ts-ignore
+                fields: Object.keys(castMemberKeys),
+
+            }
+        );
+        await this.repo.updateById(options.data.id, {cast_members})
+    }
+}

@@ -67,3 +67,4 @@ typings/
 
 .npm-cache
 .docker/elasticdata
+.history/
