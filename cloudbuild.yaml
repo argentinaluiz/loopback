@@ -23,6 +23,8 @@ steps:
         'http://elatiscsearch:9200',
         '-wait',
         'http://app:3001',
+        '-timeout',
+        '50s',
       ]
 
   - id: 'Rodando tests'
