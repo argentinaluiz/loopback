@@ -1,7 +1,7 @@
 import '../../bootstrap';
 import {Client, expect} from '@loopback/testlab';
 import {LoopbackTestApplication} from '../..';
-import {clearDb, testdb} from '../helpers/database.helpers';
+import {clearDb} from '../helpers/database.helpers';
 import {setupApplication} from './test-helper';
 
 describe('CategoryController', () => {
@@ -10,8 +10,6 @@ describe('CategoryController', () => {
   beforeEach(clearDb);
   before('setupApplication', async () => {
     ({app, client} = await setupApplication());
-
-    app.bind('datasources.esv7').to(testdb);
   });
 
   after(async () => {

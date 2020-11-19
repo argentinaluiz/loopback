@@ -7,6 +7,7 @@ import {
 import supertest from 'supertest';
 import config from '../../../config';
 import {RestBindings} from '@loopback/rest';
+import {testdb} from '../helpers/database.helpers';
 
 export async function setupApplication(): Promise<AppWithClient> {
   const restConfig = givenHttpServerConfig({
@@ -27,6 +28,8 @@ export async function setupApplication(): Promise<AppWithClient> {
   process.exit(0);*/
   await app.boot();
   await app.start();
+
+  app.bind('datasources.esv7').to(testdb);
 
   const client = supertest('http://127.0.0.1:9000');
 

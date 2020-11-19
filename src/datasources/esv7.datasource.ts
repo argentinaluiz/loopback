@@ -6,6 +6,7 @@ import {
 } from '@loopback/core';
 import {Client} from 'es6';
 import {juggler} from '@loopback/repository';
+import baseEsv7Config from './base-esv7.config';
 
 @lifeCycleObserver('datasource')
 export class Esv7Datasource
@@ -13,10 +14,8 @@ export class Esv7Datasource
   implements LifeCycleObserver {
   static dataSourceName = 'esv7';
 
-  constructor(
-    @inject('datasources.config.base-esv7', {optional: true})
-    config,
-  ) {
+  constructor(config = baseEsv7Config) {
+    console.log(config);
     super(config);
   }
 
