@@ -5,7 +5,7 @@ steps:
 
   - id: 'Rodando docker-compose'
     name: 'docker/compose'
-    args: ['-f', 'docker-compose.prod.yaml', 'up']
+    args: ['-f', 'docker-compose.prod.yaml', 'up', '-d']
 
   - id: 'Chown in /home/node/app'
     name: 'docker'
