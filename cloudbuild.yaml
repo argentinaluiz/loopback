@@ -1,4 +1,8 @@
 steps:
+  - id: 'Permission on scripts/build.sh'
+    name: 'bash'
+    args: ['chmod', '+x', '.docker/entrypoint.sh']
+
   - id: 'Rodando docker-compose'
     name: 'docker/compose'
     args: ['-f', 'docker-compose.prod.yaml', 'up', '-d']
