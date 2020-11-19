@@ -11,8 +11,6 @@ services:
       - HOST=0.0.0.0
       - PORT=3001
       - CHOKIDAR_USEPOLLING=true
-    volumes:
-      - .:/home/node/app
     networks:
       - app-network
     depends_on:
@@ -23,8 +21,6 @@ services:
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
-    volumes:
-      - ./.docker/elasticdata:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
     networks:

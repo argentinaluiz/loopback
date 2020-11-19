@@ -11,6 +11,21 @@ steps:
     name: 'docker'
     args: ['exec', '-u', 'root', '-t', 'app', 'chown', '-R', 'node:node', '.']
 
+  - id: 'Esperando containers'
+    name: 'docker'
+    args:
+      [
+        'exec',
+        '-u',
+        '-t',
+        'app',
+        'dockerize',
+        '-wait',
+        'http://elatiscsearch:9200',
+        '-wait',
+        'http://app:3001',
+      ]
+
   - id: 'Rodando tests'
     name: 'docker'
     args: ['exec', '-t', 'app', 'npm', 'test']
