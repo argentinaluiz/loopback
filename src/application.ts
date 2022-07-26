@@ -27,6 +27,14 @@ import {ApiResourceProvider} from './providers/api-resource.provider';
 //import {BaseRepository} from './repositories/base.repository';
 //import {difference} from 'lodash';
 //import {getModelRelations} from '@loopback/repository';
+import {AuthenticationComponent} from '@loopback/authentication';
+import {
+  JWTAuthenticationComponent,
+  SECURITY_SCHEME_SPEC,
+  TokenServiceBindings,
+  UserServiceBindings,
+} from '@loopback/authentication-jwt';
+import { JWTService } from './services';
 
 export class LoopbackTestApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(Application)),
@@ -47,6 +55,10 @@ export class LoopbackTestApplication extends BootMixin(
     this.component(ModelsComponent);
     this.component(RabbitmqComponent);
     this.component(ValidatorsComponent);
+    this.component(AuthenticationComponent);
+    this.component(JWTAuthenticationComponent);
+    this.bind(TokenServiceBindings.TOKEN_SECRET).to(options.jwt.secret);
+    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {

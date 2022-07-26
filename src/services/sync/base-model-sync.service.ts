@@ -60,6 +60,7 @@ export class BaseModelSyncService {
   }
 
   async syncRelation({relation, id, data, repo, repoRelation, message}) {
+    console.log(relation, data, message.fields.routingKey);
     const fields = Object.keys(
       repo.modelClass.definition.properties[relation].jsonSchema.items
         .properties,

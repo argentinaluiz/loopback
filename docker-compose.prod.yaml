@@ -26,6 +26,9 @@ services:
     networks:
       - app-network
 
+  dockerize:
+    image: jwilder/dockerize
+
 networks:
   app-network:
     driver: bridge

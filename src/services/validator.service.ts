@@ -43,7 +43,7 @@ export class ValidatorService {
     this.cache.forEach((value, key) => {
       globalSchemas[key] = value;
     });
-    console.log(data);
+
     await validateRequestBody(
       {value: data, schema: schemaRef, coercionRequired: true},
       {required: true, content: {}},

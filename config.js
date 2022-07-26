@@ -19,4 +19,8 @@ module.exports = {
   rabbitmq: {
     uri: process.env.RABBITMQ_URI,
   },
+  jwt: {
+    secret: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk3aXesgROLlvL8YtAgwWvh0UnSHR6SY7Jgr2YGAoyXTCWNEMYhTy0+OJY7FNlyTC+A324skpbPTr1nwRI15GvWzJz9DzrPiSjRHE9IQAfMbjY0/NGkUgbXXNcFzyykUyfVhK40FZ1NC9xnsNJ03mCnodO5Gk24Jccycd2GTxrpeAXXNM1y4+YPgLwRoc4O5axt/UAupYE/iJwDkLCXp0P5T6deU2nidpdFyXIRFkPrhBbEtmYLqcFp4dWet91TVhxZKoUPShdyKjeJi+cv0WE0x5+HJGVZjZe5K1LuTr/XUj454idwygy1pcwN/2zcG62u3O6t9KfHYM4YvcYKLDBwIDAQAB\n-----END PUBLIC KEY-----",
+    algorithms: ['RS256']
+  }
 };

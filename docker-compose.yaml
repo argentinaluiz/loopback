@@ -15,7 +15,7 @@ services:
       - .:/home/node/app
     networks:
       - app-network
-      # - rabbitmq-test_network
+      # - rabbitmq-test_default
     depends_on:
       - elasticsearch
 
@@ -41,5 +41,5 @@ services:
 networks:
   app-network:
     driver: bridge
-  # rabbitmq-test_network:
-  #   external: true
+  # rabbitmq-test_default:
+  # external: true

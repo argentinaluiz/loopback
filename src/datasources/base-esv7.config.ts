@@ -96,6 +96,9 @@ export default {
       type: 'keyword',
       index: false,
     },
+    is_upload_complete: {
+      type: 'boolean',
+    },
     is_active: {
       type: 'boolean',
     },

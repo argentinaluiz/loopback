@@ -75,7 +75,7 @@ export class VideoController {
     @param.filter(Video, {exclude: 'where'}) filter?: Filter<Video>,
   ): Promise<Video> {
     const f = this.buildFilter(filter);
-    const obj = await this.videoRepository.findOne(f);
+    const obj = await this.videoRepository.findById(id, f);
 
     if (!obj) {
       throw new EntityNotFoundError(Video, id);

@@ -8,12 +8,13 @@ import {
 } from '@loopback/repository';
 import {Entity} from '@loopback/repository/src/model';
 import {Client} from 'es6';
-import {merge, pick} from 'lodash';
+import {merge, pick, result} from 'lodash';
 //import {stringify} from 'qs';
 import {Filter} from '@loopback/repository/src/query';
 import {Options} from '@loopback/repository/src/common-types';
 import {Pagination} from '../utils/pagination';
 import legacy from 'loopback-datasource-juggler';
+import {drop} from 'lodash';
 
 export abstract class BaseRepository<
   T extends Entity,

@@ -13,8 +13,12 @@ import {CategoryRepository} from '../repositories';
 import {inject} from '@loopback/context';
 import {getPaginationSchema} from '../schemas/pagination.schema';
 
+import { authenticate } from '@loopback/authentication';
+
 const categoriesSchema = getPaginationSchema(Category);
 
+
+@authenticate('jwt')
 export class CategoryController {
   constructor(
     @repository(CategoryRepository)

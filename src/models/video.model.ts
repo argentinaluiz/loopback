@@ -123,6 +123,13 @@ export class Video extends Entity {
   is_active: boolean;
 
   @property({
+    type: 'boolean',
+    required: false,
+    default: false,
+  })
+  is_upload_complete: boolean;
+
+  @property({
     type: 'date',
     required: true,
   })

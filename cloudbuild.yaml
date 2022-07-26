@@ -1,23 +1,18 @@
 steps:
-  - id: 'Permission on scripts/build.sh'
-    name: 'bash'
-    args: ['chmod', '+x', '.docker/entrypoint.sh']
-
   - id: 'Rodando docker-compose'
     name: 'docker/compose'
-    args: ['-f', 'docker-compose.prod.yaml', 'up', '-d']
+    args: ['-f', 'docker-compose.prod.yaml', 'up', '-d', 'app', 'elasticsearch']
 
   - id: 'Chown in /home/node/app'
     name: 'docker'
     args: ['exec', '-u', 'root', '-t', 'app', 'chown', '-R', 'node:node', '.']
 
   - id: 'Esperando containers'
-    name: 'docker'
+    name: 'docker/compose'
     args:
       [
-        'exec',
-        '-t',
-        'app',
+        'run',
+        'dockerize',
         'dockerize',
         '-wait',
         'http://elasticsearch:9200',

@@ -5,3 +5,4 @@ export * from './sync/cast-member-sync.service';
 export * from './sync/video-sync.service';
 export * from './sync/featured-video-sync.service';
 export * from './validator.service';
+export * from './auth/jwt.service';
